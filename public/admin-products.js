@@ -1,20 +1,29 @@
+let adminLoggedIn = false;
+
 async function adminLogin() {
   const pass = document.getElementById("adminPassword").value.trim();
   if (!pass) return setStatus("Enter password");
-  const res = await fetch("/api/admin/login", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ password: pass })
-  });
-  if (!res.ok) return setStatus("Wrong password");
-  setStatus("Logged in", true);
-  loadProducts();
+
+  try {
+    const res = await fetch("/api/admin/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: pass })
+    });
+
+    if (!res.ok) return setStatus("Wrong password");
+    adminLoggedIn = true;
+    setStatus("Logged in", true);
+    loadProducts();
+  } catch (err) {
+    setStatus("Login failed");
+  }
 }
+
 async function adminLogout() {
   await fetch("/api/admin/logout", { method: "POST" });
   location.reload();
 }
-
 
 function setStatus(msg, good = false) {
   const el = document.getElementById("status");
@@ -23,40 +32,32 @@ function setStatus(msg, good = false) {
 }
 
 async function loadProducts() {
-  adminPass = document.getElementById("adminPassword").value.trim();
-  if (!adminPass) {
-    setStatus("Enter admin password first.");
-    return;
-  }
+  if (!adminLoggedIn) return setStatus("Login first.");
 
-  setStatus("Loading products...", false);
-
+  setStatus("Loading products...");
   try {
     const res = await fetch("/api/products");
     const products = await res.json();
-
     const tbody = document.getElementById("productRows");
     tbody.innerHTML = "";
 
     products.forEach(p => {
       const tr = document.createElement("tr");
-
       tr.innerHTML = `
         <td>${p.id}</td>
-        <td>${p.image ? `<img src="${p.image}" alt="${p.name}">` : ""}</td>
-        <td><input value="${p.name}" data-id="${p.id}" data-field="name" /></td>
-        <td><input type="number" value="${p.price}" data-id="${p.id}" data-field="price" /></td>
+        <td>${p.image ? `<img src="${p.image}" alt="${p.name}" style="max-width: 80px;">` : ""}</td>
+        <td><input value="${p.name}" data-id="${p.id}" data-field="name"></td>
+        <td><input type="number" value="${p.price}" data-id="${p.id}" data-field="price"></td>
         <td><textarea rows="3" data-id="${p.id}" data-field="description">${p.description || ""}</textarea></td>
         <td>
           <input type="file" accept="image/*" data-id="${p.id}" data-field="image">
-          <div class="note">Leave empty if you don’t want to change image.</div>
+          <div class="note">Leave empty if not changing image</div>
         </td>
         <td>
           <button class="btn-small btn-save" data-action="save" data-id="${p.id}">Save</button>
           <button class="btn-small btn-del" data-action="delete" data-id="${p.id}" style="margin-left:4px;">Delete</button>
         </td>
       `;
-
       tbody.appendChild(tr);
     });
 
@@ -67,13 +68,10 @@ async function loadProducts() {
   }
 }
 
-// Add product
+// Add product (file upload)
 document.getElementById("addForm").addEventListener("submit", async (e) => {
   e.preventDefault();
-  if (!adminPass) {
-    setStatus("Enter admin password and click Login first.");
-    return;
-  }
+  if (!adminLoggedIn) return setStatus("Login first.");
 
   const form = e.target;
   const fd = new FormData(form);
@@ -83,21 +81,16 @@ document.getElementById("addForm").addEventListener("submit", async (e) => {
       method: "POST",
       body: fd
     });
-
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      throw new Error(data.error || "Failed");
-    }
+    if (!res.ok) throw new Error();
     setStatus("Product added.", true);
     form.reset();
     loadProducts();
-  } catch (err) {
-    console.error(err);
+  } catch {
     setStatus("Failed to add product.");
   }
 });
 
-// Delegate save/delete for each row
+// Save / delete
 document.getElementById("productRows").addEventListener("click", async (e) => {
   const btn = e.target.closest("button");
   if (!btn) return;
@@ -105,24 +98,16 @@ document.getElementById("productRows").addEventListener("click", async (e) => {
   const id = btn.dataset.id;
   const action = btn.dataset.action;
   if (!id || !action) return;
-
-  if (!adminPass) {
-    setStatus("Enter admin password and click Login first.");
-    return;
-  }
+  if (!adminLoggedIn) return setStatus("Login first.");
 
   if (action === "delete") {
     if (!confirm("Delete this product?")) return;
-
     try {
-      const res = await fetch(`/api/admin/products/${id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(`/api/admin/products/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error();
       setStatus("Product deleted.", true);
       loadProducts();
-    } catch (err) {
-      console.error(err);
+    } catch {
       setStatus("Failed to delete product.");
     }
   }
@@ -138,9 +123,7 @@ document.getElementById("productRows").addEventListener("click", async (e) => {
     fd.append("name", name);
     fd.append("price", price);
     fd.append("description", description);
-    if (imageInput && imageInput.files && imageInput.files[0]) {
-      fd.append("image", imageInput.files[0]);
-    }
+    if (imageInput.files.length > 0) fd.append("image", imageInput.files[0]);
 
     try {
       const res = await fetch(`/api/admin/products/${id}`, {
@@ -150,8 +133,7 @@ document.getElementById("productRows").addEventListener("click", async (e) => {
       if (!res.ok) throw new Error();
       setStatus("Product updated.", true);
       loadProducts();
-    } catch (err) {
-      console.error(err);
+    } catch {
       setStatus("Failed to update product.");
     }
   }
