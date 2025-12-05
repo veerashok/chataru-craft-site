@@ -458,3 +458,13 @@ h1, h2, h3, h4 {
 .whatsapp-btn:hover {
   background: #1ea954;
 }
+.btn.amazon-btn {
+  background: #ff9900;       /* Amazon orange */
+  border-color: #ff9900;
+  color: #111827;
+  font-weight: 700;
+}
+
+.btn.amazon-btn:hover {
+  opacity: 0.9;
+}
