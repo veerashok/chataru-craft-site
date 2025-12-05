@@ -85,7 +85,7 @@ app.post("/api/admin/login", (req, res) => {
   res.cookie("admin_session", token, {
     httpOnly: true,
     secure: true,
-    sameSite: "strict",
+    sameSite: none,
     maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
   });
 
