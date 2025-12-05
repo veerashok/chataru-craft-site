@@ -1,5 +1,11 @@
 let adminLoggedIn = false;
 
+function setStatus(msg, good = false) {
+  const el = document.getElementById("status");
+  el.textContent = msg;
+  el.style.color = good ? "green" : "#b3261e";
+}
+
 async function adminLogin() {
   const pass = document.getElementById("adminPassword").value.trim();
   if (!pass) return setStatus("Enter password");
@@ -16,19 +22,15 @@ async function adminLogin() {
     setStatus("Logged in", true);
     loadProducts();
   } catch (err) {
+    console.error(err);
     setStatus("Login failed");
   }
 }
 
 async function adminLogout() {
   await fetch("/api/admin/logout", { method: "POST" });
+  adminLoggedIn = false;
   location.reload();
-}
-
-function setStatus(msg, good = false) {
-  const el = document.getElementById("status");
-  el.textContent = msg;
-  el.style.color = good ? "green" : "#b3261e";
 }
 
 async function loadProducts() {
@@ -68,7 +70,7 @@ async function loadProducts() {
   }
 }
 
-// Add product (file upload)
+// Add product
 document.getElementById("addForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   if (!adminLoggedIn) return setStatus("Login first.");
@@ -81,11 +83,13 @@ document.getElementById("addForm").addEventListener("submit", async (e) => {
       method: "POST",
       body: fd
     });
+
     if (!res.ok) throw new Error();
     setStatus("Product added.", true);
     form.reset();
     loadProducts();
-  } catch {
+  } catch (err) {
+    console.error(err);
     setStatus("Failed to add product.");
   }
 });
@@ -103,11 +107,14 @@ document.getElementById("productRows").addEventListener("click", async (e) => {
   if (action === "delete") {
     if (!confirm("Delete this product?")) return;
     try {
-      const res = await fetch(`/api/admin/products/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/products/${id}`, {
+        method: "DELETE"
+      });
       if (!res.ok) throw new Error();
       setStatus("Product deleted.", true);
       loadProducts();
-    } catch {
+    } catch (err) {
+      console.error(err);
       setStatus("Failed to delete product.");
     }
   }
@@ -123,7 +130,9 @@ document.getElementById("productRows").addEventListener("click", async (e) => {
     fd.append("name", name);
     fd.append("price", price);
     fd.append("description", description);
-    if (imageInput.files.length > 0) fd.append("image", imageInput.files[0]);
+    if (imageInput.files && imageInput.files[0]) {
+      fd.append("image", imageInput.files[0]);
+    }
 
     try {
       const res = await fetch(`/api/admin/products/${id}`, {
@@ -133,7 +142,8 @@ document.getElementById("productRows").addEventListener("click", async (e) => {
       if (!res.ok) throw new Error();
       setStatus("Product updated.", true);
       loadProducts();
-    } catch {
+    } catch (err) {
+      console.error(err);
       setStatus("Failed to update product.");
     }
   }
