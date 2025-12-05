@@ -83,22 +83,28 @@ app.post("/api/admin/login", (req, res) => {
   adminSessions.set(token, Date.now());
 
   res.cookie("admin_session", token, {
-  httpOnly: true,
-  secure: true,          // Railway uses HTTPS
-  sameSite: "none",      // REQUIRED so cookies work in frontend/backend on same domain
-  path: "/",             // so cookie is sent everywhere
-  maxAge: 1000 * 60 * 60 * 24 * 7
-});
-
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    path: "/",
+    maxAge: 1000 * 60 * 60 * 24 * 7
+  });
 
   res.json({ success: true });
 });
 
-// ---------- ADMIN LOGOUT ----------
+// ---------- ADMIN LOGOUT (FIXED) ----------
 app.post("/api/admin/logout", adminAuth, (req, res) => {
   const token = req.cookies.admin_session;
-  adminSessions.delete(token);
-  res.clearCookie("admin_session");
+  if (token) adminSessions.delete(token);
+
+  res.clearCookie("admin_session", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    path: "/"
+  });
+
   res.json({ success: true });
 });
 
@@ -141,8 +147,6 @@ app.get("/api/admin/enquiries", adminAuth, async (req, res) => {
 });
 
 // ---------- PRODUCT CATALOGUE APIs ----------
-
-// Public: list catalogue products
 app.get("/api/products", async (req, res) => {
   try {
     const result = await pool.query(
@@ -215,7 +219,7 @@ app.delete("/api/admin/products/:id", adminAuth, async (req, res) => {
   }
 });
 
-// ---------- FALLBACK (serves frontend) ----------
+// ---------- FALLBACK ----------
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
