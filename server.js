@@ -5,6 +5,8 @@ const { Pool } = require("pg");
 const multer = require("multer");
 const cookieParser = require("cookie-parser");
 const crypto = require("crypto");
+const adminSessions = new Map();
+
 
 app.use(cookieParser());
 const app = express();
