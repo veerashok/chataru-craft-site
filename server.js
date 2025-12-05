@@ -81,6 +81,13 @@ function adminAuth(req, res, next) {
   next();
 }
 
+app.post("/api/admin/logout", adminAuth, (req, res) => {
+  const token = req.cookies.admin_session;
+  adminSessions.delete(token);
+  res.clearCookie("admin_session");
+  res.json({ success: true });
+});
+
 
 // ---------- HEALTH ----------
 app.get("/health", (req, res) => {
