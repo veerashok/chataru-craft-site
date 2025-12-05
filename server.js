@@ -3,7 +3,10 @@ const express = require("express");
 const path = require("path");
 const { Pool } = require("pg");
 const multer = require("multer");
+const cookieParser = require("cookie-parser");
+const crypto = require("crypto");
 
+app.use(cookieParser());
 const app = express();
 const PORT = process.env.PORT || 3000;
 
