@@ -72,15 +72,15 @@ const upload = multer({ storage });
 
 // ---------- ADMIN AUTH ----------
 function adminAuth(req, res, next) {
-  const adminKey = req.headers["x-admin-key"];
-  if (!process.env.ADMIN_PASSWORD) {
-    return res.status(500).json({ error: "ADMIN_PASSWORD not set on server." });
-  }
-  if (!adminKey || adminKey !== process.env.ADMIN_PASSWORD) {
+  const token = req.cookies.admin_session;
+
+  if (!token || !adminSessions.has(token)) {
     return res.status(401).json({ error: "Unauthorized" });
   }
+
   next();
 }
+
 
 // ---------- HEALTH ----------
 app.get("/health", (req, res) => {
