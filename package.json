@@ -1,0 +1,13 @@
+{
+  "name": "chataru-craft-site",
+  "version": "1.0.0",
+  "description": "Multi-page website for Chataru Craft with enquiry backend (Railway + PostgreSQL)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "pg": "^8.12.0"
+  }
+}
