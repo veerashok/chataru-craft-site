@@ -80,5 +80,29 @@
       </footer>
       <script src="main.js"></script>
       <a href="https://wa.me/6375269136" class="whatsapp-btn" target="_blank">💬 WhatsApp</a>
+      <script>
+  async function loadCatalog() {
+    try {
+      const res = await fetch("/api/products");
+      const products = await res.json();
+      const grid = document.getElementById("productGrid");
+      grid.innerHTML = products.map(p => `
+        <article class="product-card">
+          <img class="product-thumb" src="${p.image}" alt="${p.name}">
+          <div class="product-name">${p.name}</div>
+          <p class="product-desc">${p.description || ""}</p>
+          <div class="product-price">₹${p.price}</div>
+          <button class="product-btn" onclick="window.location='contact.html'">Enquire</button>
+        </article>
+      `).join("");
+    } catch (err) {
+      console.error(err);
+      const grid = document.getElementById("productGrid");
+      grid.innerHTML = "<p>Failed to load products.</p>";
+    }
+  }
+  loadCatalog();
+</script>
+<script src="main.js"></script>
    </body>
 </html>
