@@ -6,7 +6,7 @@ const multer = require("multer");
 const cookieParser = require("cookie-parser");
 const crypto = require("crypto");
 const adminSessions = new Map();
-
+const app = express();
 
 app.use(cookieParser());
 const app = express();
