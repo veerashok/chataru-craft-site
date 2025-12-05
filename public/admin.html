@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin | Enquiries | Chataru Craft</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body { padding: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { border: 1px solid #ddd; padding: 8px; font-size: 0.9rem; }
+    th { background: #8b5a2b; color: white; }
+    input { padding: .55rem .7rem; font-size: 1rem; width: 250px; }
+    button { padding: .55rem .9rem; font-size: 1rem; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<h2>Admin Login</h2>
+<input id="password" type="password" placeholder="Enter admin password" />
+<button onclick="loadEnquiries()">Login</button>
+<p id="status" style="color:red;"></p>
+
+<div id="data" style="display:none;">
+  <h2>Enquiries</h2>
+  <table id="table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Message</th>
+        <th>Source Page</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<script>
+async function loadEnquiries() {
+  const pass = document.getElementById("password").value;
+  const status = document.getElementById("status");
+  status.textContent = "Loading...";
+
+  try {
+    const res = await fetch("/api/admin/enquiries", {
+      headers: { "x-admin-key": pass }
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed");
+
+    document.getElementById("data").style.display = "block";
+    status.textContent = "";
+    const tbody = document.querySelector("#table tbody");
+    tbody.innerHTML = "";
+    data.forEach(e => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${new Date(e.created_at).toLocaleString()}</td>
+          <td>${e.name}</td>
+          <td>${e.email}</td>
+          <td>${e.phone || "-"}</td>
+          <td>${e.message}</td>
+          <td>${e.source_page || "-"}</td>
+        </tr>`;
+    });
+  } catch {
+    status.textContent = "Wrong password or server error.";
+  }
+}
+</script>
+
+</body>
+</html>
