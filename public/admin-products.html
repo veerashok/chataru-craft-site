@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin – Manage Products | Chataru Craft</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body { padding: 1.5rem; background: #f8f5f1; }
+    h1, h2 { margin-top: 0; }
+    .admin-top { margin-bottom: 1rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: #fff; }
+    th, td { border: 1px solid #e0d5c7; padding: 6px 8px; font-size: 0.85rem; vertical-align: top; }
+    th { background: #8b5a2b; color: #fff; }
+    input, textarea { width: 100%; box-sizing: border-box; padding: 4px 6px; font-size: 0.85rem; }
+    img { max-width: 80px; border-radius: 4px; }
+    .btn-small { padding: 4px 8px; font-size: 0.8rem; border-radius: 999px; border: none; cursor: pointer; }
+    .btn-del { background: #b3261e; color: #fff; }
+    .btn-save { background: #2e7d32; color: #fff; margin-top: 4px; }
+    .note { font-size: 0.8rem; color: #777; }
+  </style>
+</head>
+<body>
+  <h1>Admin – Product Catalogue</h1>
+
+  <div class="admin-top">
+    <label>
+      Admin password:
+      <input type="password" id="adminPassword" placeholder="ADMIN_PASSWORD" />
+    </label>
+    <button class="btn-small btn-save" onclick="loadProducts()">Login / Refresh</button>
+    <span id="status" class="note"></span>
+  </div>
+
+  <section>
+    <h2>Add new product</h2>
+    <form id="addForm">
+      <table>
+        <tr>
+          <td>Name</td>
+          <td><input name="name" required /></td>
+        </tr>
+        <tr>
+          <td>Price (₹)</td>
+          <td><input name="price" type="number" min="0" required /></td>
+        </tr>
+        <tr>
+          <td>Description</td>
+          <td><textarea name="description" rows="3"></textarea></td>
+        </tr>
+        <tr>
+          <td>Image</td>
+          <td>
+            <input name="image" type="file" accept="image/*" required />
+            <div class="note">Image will be uploaded to /uploads.</div>
+          </td>
+        </tr>
+      </table>
+      <button type="submit" class="btn-small btn-save" style="margin-top:8px;">Add product</button>
+    </form>
+  </section>
+
+  <section style="margin-top:2rem;">
+    <h2>Existing products</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Preview</th>
+          <th>Name</th>
+          <th>Price (₹)</th>
+          <th>Description</th>
+          <th>Change image</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="productRows">
+        <!-- Filled by JS -->
+      </tbody>
+    </table>
+  </section>
+
+  <script src="admin-products.js"></script>
+</body>
+</html>
