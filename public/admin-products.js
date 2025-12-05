@@ -1,5 +1,3 @@
-let adminLoggedIn = false;
-
 function setStatus(msg, good = false) {
   const el = document.getElementById("status");
   el.textContent = msg;
@@ -17,10 +15,13 @@ async function adminLogin() {
       body: JSON.stringify({ password: pass })
     });
 
-    if (!res.ok) return setStatus("Wrong password");
-    adminLoggedIn = true;
+    if (!res.ok) {
+      setStatus("Wrong password");
+      return;
+    }
+
     setStatus("Logged in", true);
-    loadProducts();
+    loadProducts(); // reload list after login
   } catch (err) {
     console.error(err);
     setStatus("Login failed");
@@ -28,18 +29,22 @@ async function adminLogin() {
 }
 
 async function adminLogout() {
-  await fetch("/api/admin/logout", { method: "POST" });
-  adminLoggedIn = false;
+  try {
+    await fetch("/api/admin/logout", { method: "POST" });
+  } catch (e) {
+    console.error(e);
+  }
   location.reload();
 }
 
 async function loadProducts() {
-  if (!adminLoggedIn) return setStatus("Login first.");
-
   setStatus("Loading products...");
+
   try {
-    const res = await fetch("/api/products");
+    const res = await fetch("/api/products"); // public endpoint; no auth needed
+    if (!res.ok) throw new Error();
     const products = await res.json();
+
     const tbody = document.getElementById("productRows");
     tbody.innerHTML = "";
 
@@ -70,10 +75,9 @@ async function loadProducts() {
   }
 }
 
-// Add product
+// Add product (requires valid session cookie)
 document.getElementById("addForm").addEventListener("submit", async (e) => {
   e.preventDefault();
-  if (!adminLoggedIn) return setStatus("Login first.");
 
   const form = e.target;
   const fd = new FormData(form);
@@ -83,6 +87,11 @@ document.getElementById("addForm").addEventListener("submit", async (e) => {
       method: "POST",
       body: fd
     });
+
+    if (res.status === 401) {
+      setStatus("Please login first.", false);
+      return;
+    }
 
     if (!res.ok) throw new Error();
     setStatus("Product added.", true);
@@ -102,7 +111,6 @@ document.getElementById("productRows").addEventListener("click", async (e) => {
   const id = btn.dataset.id;
   const action = btn.dataset.action;
   if (!id || !action) return;
-  if (!adminLoggedIn) return setStatus("Login first.");
 
   if (action === "delete") {
     if (!confirm("Delete this product?")) return;
@@ -110,6 +118,12 @@ document.getElementById("productRows").addEventListener("click", async (e) => {
       const res = await fetch(`/api/admin/products/${id}`, {
         method: "DELETE"
       });
+
+      if (res.status === 401) {
+        setStatus("Please login first.", false);
+        return;
+      }
+
       if (!res.ok) throw new Error();
       setStatus("Product deleted.", true);
       loadProducts();
@@ -139,6 +153,12 @@ document.getElementById("productRows").addEventListener("click", async (e) => {
         method: "PUT",
         body: fd
       });
+
+      if (res.status === 401) {
+        setStatus("Please login first.", false);
+        return;
+      }
+
       if (!res.ok) throw new Error();
       setStatus("Product updated.", true);
       loadProducts();
@@ -148,3 +168,6 @@ document.getElementById("productRows").addEventListener("click", async (e) => {
     }
   }
 });
+
+// Optional: auto-load products on page load (public list)
+loadProducts();
