@@ -1,4 +1,4 @@
-let adminPass = "";
+
 
 function setStatus(msg, good = false) {
   const el = document.getElementById("status");
