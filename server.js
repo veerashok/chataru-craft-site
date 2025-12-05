@@ -106,6 +106,26 @@ app.post("/api/enquiry", async (req, res) => {
     return res.status(500).json({ error: "Failed to save enquiry." });
   }
 });
+// ---------- ADMIN LOGIN (generate cookie session) ----------
+app.post("/api/admin/login", (req, res) => {
+  const { password } = req.body;
+  if (!password || password !== process.env.ADMIN_PASSWORD) {
+    return res.status(401).json({ error: "Wrong password" });
+  }
+
+  const token = crypto.randomBytes(32).toString("hex");
+  res.cookie("admin_session", token, {
+    httpOnly: true,
+    secure: true,       // Railway uses HTTPS, good for security
+    sameSite: "strict",
+    maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+  });
+
+  adminSessions.set(token, Date.now());
+  res.json({ success: true });
+});
+
+
 
 // Admin: list enquiries
 app.get("/api/admin/enquiries", adminAuth, async (req, res) => {
