@@ -10,6 +10,10 @@ async function adminLogin() {
   setStatus("Logged in", true);
   loadProducts();
 }
+async function adminLogout() {
+  await fetch("/api/admin/logout", { method: "POST" });
+  location.reload();
+}
 
 
 function setStatus(msg, good = false) {
