@@ -5,11 +5,17 @@ const { Pool } = require("pg");
 const multer = require("multer");
 const cookieParser = require("cookie-parser");
 const crypto = require("crypto");
+
 const adminSessions = new Map();
 const app = express();
-
-app.use(cookieParser());
 const PORT = process.env.PORT || 3000;
+
+// ---------- MIDDLEWARE (ORDER MATTERS) ----------
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, "public")));
+app.use("/uploads", express.static(path.join(__dirname, "public", "uploads")));
 
 // ---------- DB SETUP ----------
 const pool = new Pool({
@@ -18,7 +24,6 @@ const pool = new Pool({
 });
 
 async function initDb() {
-  // enquiries table (you already use this)
   await pool.query(`
     CREATE TABLE IF NOT EXISTS enquiries (
       id BIGSERIAL PRIMARY KEY,
@@ -31,7 +36,6 @@ async function initDb() {
     );
   `);
 
-  // products table for catalogue
   await pool.query(`
     CREATE TABLE IF NOT EXISTS products (
       id BIGSERIAL PRIMARY KEY,
@@ -46,19 +50,9 @@ async function initDb() {
   console.log("DB tables ready (enquiries, products)");
 }
 
-initDb().catch(err => {
-  console.error("DB init error:", err);
-});
+initDb().catch(err => console.error("DB init error:", err));
 
-// ---------- MIDDLEWARE ----------
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
-
-// also explicitly serve uploads
-app.use("/uploads", express.static(path.join(__dirname, "public", "uploads")));
-
-// ---------- MULTER (image upload) ----------
+// ---------- IMAGE UPLOAD (MULTER) ----------
 const uploadsDir = path.join(__dirname, "public", "uploads");
 const storage = multer.diskStorage({
   destination: uploadsDir,
@@ -69,17 +63,36 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// ---------- ADMIN AUTH ----------
+// ---------- ADMIN SESSION AUTH ----------
 function adminAuth(req, res, next) {
   const token = req.cookies.admin_session;
-
   if (!token || !adminSessions.has(token)) {
     return res.status(401).json({ error: "Unauthorized" });
   }
-
   next();
 }
 
+// ---------- ADMIN LOGIN ----------
+app.post("/api/admin/login", (req, res) => {
+  const { password } = req.body;
+  if (!password || password !== process.env.ADMIN_PASSWORD) {
+    return res.status(401).json({ error: "Wrong password" });
+  }
+
+  const token = crypto.randomBytes(32).toString("hex");
+  adminSessions.set(token, Date.now());
+
+  res.cookie("admin_session", token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+  });
+
+  res.json({ success: true });
+});
+
+// ---------- ADMIN LOGOUT ----------
 app.post("/api/admin/logout", adminAuth, (req, res) => {
   const token = req.cookies.admin_session;
   adminSessions.delete(token);
@@ -87,16 +100,14 @@ app.post("/api/admin/logout", adminAuth, (req, res) => {
   res.json({ success: true });
 });
 
-
-// ---------- HEALTH ----------
+// ---------- HEALTH CHECK ----------
 app.get("/health", (req, res) => {
   res.json({ ok: true });
 });
 
-// ---------- ENQUIRY APIs (as before) ----------
+// ---------- ENQUIRY API ----------
 app.post("/api/enquiry", async (req, res) => {
   const { name, email, phone, message, sourcePage } = req.body || {};
-
   if (!name || !email || !message) {
     return res.status(400).json({ error: "Name, email and message are required." });
   }
@@ -107,35 +118,14 @@ app.post("/api/enquiry", async (req, res) => {
        VALUES ($1, $2, $3, $4, $5);`,
       [name, email, phone || "", message, sourcePage || ""]
     );
-
-    return res.json({ success: true, message: "Enquiry submitted successfully." });
+    res.json({ success: true, message: "Enquiry submitted successfully." });
   } catch (err) {
     console.error("Error saving enquiry:", err);
-    return res.status(500).json({ error: "Failed to save enquiry." });
+    res.status(500).json({ error: "Failed to save enquiry." });
   }
 });
-// ---------- ADMIN LOGIN (generate cookie session) ----------
-app.post("/api/admin/login", (req, res) => {
-  const { password } = req.body;
-  if (!password || password !== process.env.ADMIN_PASSWORD) {
-    return res.status(401).json({ error: "Wrong password" });
-  }
 
-  const token = crypto.randomBytes(32).toString("hex");
-  res.cookie("admin_session", token, {
-    httpOnly: true,
-    secure: true,       // Railway uses HTTPS, good for security
-    sameSite: "strict",
-    maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
-  });
-
-  adminSessions.set(token, Date.now());
-  res.json({ success: true });
-});
-
-
-
-// Admin: list enquiries
+// ---------- ADMIN: READ ENQUIRIES ----------
 app.get("/api/admin/enquiries", adminAuth, async (req, res) => {
   try {
     const result = await pool.query(
@@ -150,7 +140,7 @@ app.get("/api/admin/enquiries", adminAuth, async (req, res) => {
 
 // ---------- PRODUCT CATALOGUE APIs ----------
 
-// Public: list products for catalogue
+// Public: list catalogue products
 app.get("/api/products", async (req, res) => {
   try {
     const result = await pool.query(
@@ -163,14 +153,13 @@ app.get("/api/products", async (req, res) => {
   }
 });
 
-// Admin: create product (with image upload)
+// Admin: add product
 app.post("/api/admin/products", adminAuth, upload.single("image"), async (req, res) => {
   try {
     const { name, price, description } = req.body;
     if (!name || !price || !req.file) {
       return res.status(400).json({ error: "Name, price and image are required." });
     }
-
     const imgPath = "/uploads/" + req.file.filename;
 
     await pool.query(
@@ -178,7 +167,6 @@ app.post("/api/admin/products", adminAuth, upload.single("image"), async (req, r
        VALUES ($1, $2, $3, $4);`,
       [name, parseInt(price, 10), description || "", imgPath]
     );
-
     res.json({ success: true });
   } catch (err) {
     console.error("Error creating product:", err);
@@ -186,18 +174,17 @@ app.post("/api/admin/products", adminAuth, upload.single("image"), async (req, r
   }
 });
 
-// Admin: update product (optionally new image)
+// Admin: update product
 app.put("/api/admin/products/:id", adminAuth, upload.single("image"), async (req, res) => {
   try {
     const { name, price, description } = req.body;
     const id = req.params.id;
-
     if (!name || !price) {
       return res.status(400).json({ error: "Name and price are required." });
     }
 
     let query = "UPDATE products SET name=$1, price=$2, description=$3";
-    const params = [name, parseInt(price, 10), description || ""];
+    let params = [name, parseInt(price, 10), description || ""];
 
     if (req.file) {
       query += ", image=$4 WHERE id=$5";
@@ -226,11 +213,12 @@ app.delete("/api/admin/products/:id", adminAuth, async (req, res) => {
   }
 });
 
-// ---------- FALLBACK ----------
+// ---------- FALLBACK (serves frontend) ----------
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
+// ---------- START SERVER ----------
 app.listen(PORT, () => {
   console.log(`Chataru Craft server running on http://localhost:${PORT}`);
 });
