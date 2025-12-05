@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Catalog | Chataru Craft</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header>
+  <div class="container nav">
+    <div class="logo">
+      <div class="logo-mark">CC</div>
+      <div>
+        <div class="logo-text-small">Boss Enterprises</div>
+        <div>Chataru Craft</div>
+      </div>
+    </div>
+    <button class="menu-toggle" aria-label="Toggle menu">☰</button>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="catalog.html">Catalog</a>
+      <a href="custom.html">Custom Orders</a>
+      <a href="contact.html">Contact</a>
+      <a class="nav-cta" href="contact.html">Bulk / B2B</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="badge">Catalog</div>
+          <h1>Featured wooden furniture & decor</h1>
+          <p>
+            These are sample products; replace the thumbnails and text with your real
+            catalogue (around 30 items).
+          </p>
+        </div>
+        <a href="contact.html" class="btn btn-outline">Request full catalog PDF</a>
+      </div>
+
+      <div class="catalog-grid">
+        <article class="product-card">
+          <div class="product-thumb">Photo: Hand-carved Pooja Bajot</div>
+          <div class="product-meta">Ethnic · Bajot</div>
+          <div class="product-name">Hand-carved Pooja Bajot</div>
+          <p class="product-desc">Solid sheesham, floral carving for pooja / decor.</p>
+          <div class="product-bottom">
+            <div class="product-price">₹2,450*</div>
+            <button class="product-btn" onclick="window.location='contact.html'">
+              Enquire
+            </button>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-thumb">Photo: Jharokha Wall Shelf</div>
+          <div class="product-meta">Wall Decor</div>
+          <div class="product-name">Jharokha Wall Shelf</div>
+          <p class="product-desc">Rajasthani haveli inspired jharokha shelf.</p>
+          <div class="product-bottom">
+            <div class="product-price">₹1,750*</div>
+            <button class="product-btn" onclick="window.location='contact.html'">
+              Enquire
+            </button>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-thumb">Photo: Solid Wood Coffee Table</div>
+          <div class="product-meta">Living Room</div>
+          <div class="product-name">Solid Wood Coffee Table</div>
+          <p class="product-desc">Minimal table with storage shelf, multiple finishes.</p>
+          <div class="product-bottom">
+            <div class="product-price">₹7,900*</div>
+            <button class="product-btn" onclick="window.location='contact.html'">
+              Enquire
+            </button>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-thumb">Photo: Heritage Sanduk</div>
+          <div class="product-meta">Storage</div>
+          <div class="product-name">Heritage Sanduk Trunk</div>
+          <p class="product-desc">Classic sanduk with brass hardware for storage.</p>
+          <div class="product-bottom">
+            <div class="product-price">₹9,500*</div>
+            <button class="product-btn" onclick="window.location='contact.html'">
+              Enquire
+            </button>
+          </div>
+        </article>
+      </div>
+
+      <p style="font-size:0.8rem;color:var(--muted);margin-top:0.7rem;">
+        *Prices indicative; final price depends on size, polish, and platform listing.
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer-row">
+    <div>© <span id="year"></span> Chataru Craft · All rights reserved.</div>
+    <div>Village Lakhe Ka Tala, Ramjan Ki Gafan, Barmer, Rajasthan</div>
+  </div>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Custom Orders | Chataru Craft</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header>
+  <div class="container nav">
+    <div class="logo">
+      <div class="logo-mark">CC</div>
+      <div>
+        <div class="logo-text-small">Boss Enterprises</div>
+        <div>Chataru Craft</div>
+      </div>
+    </div>
+    <button class="menu-toggle" aria-label="Toggle menu">☰</button>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="catalog.html">Catalog</a>
+      <a href="custom.html">Custom Orders</a>
+      <a href="contact.html">Contact</a>
+      <a class="nav-cta" href="contact.html">Bulk / B2B</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="badge">Custom & Bulk Orders</div>
+          <h1>Bespoke furniture tailored to your space.</h1>
+          <p>
+            Share measurements, reference photos or sketches. We’ll suggest a design,
+            quote, and timeline based on your needs.
+          </p>
+        </div>
+      </div>
+
+      <div class="contact-grid">
+        <div class="card">
+          <h3>How it works</h3>
+          <ol style="padding-left:1.2rem;font-size:0.9rem;color:#5a4633;">
+            <li>Send us room size, rough measurements, and reference photos.</li>
+            <li>We reply with design suggestions, wood options and finish.</li>
+            <li>Once confirmed, we start production and share progress pictures.</li>
+            <li>Furniture is packed securely and shipped to your city.</li>
+          </ol>
+        </div>
+        <div class="card">
+          <h3>Share your idea</h3>
+          <form class="contact-form js-enquiry-form">
+            <input type="text" name="name" placeholder="Your name" required />
+            <input type="email" name="email" placeholder="Your email" required />
+            <input type="text" name="phone" placeholder="Phone / WhatsApp" />
+            <textarea name="message"
+              placeholder="Describe the furniture you want – type (bed, swing, table), size, finish, city..."></textarea>
+            <button type="submit" class="btn btn-primary">Send custom order request</button>
+            <div class="form-status" style="font-size:0.8rem;margin-top:0.3rem;"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer-row">
+    <div>© <span id="year"></span> Chataru Craft · All rights reserved.</div>
+    <div>Village Lakhe Ka Tala, Ramjan Ki Gafan, Barmer, Rajasthan</div>
+  </div>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>
