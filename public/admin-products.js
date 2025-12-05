@@ -1,3 +1,15 @@
+async function adminLogin() {
+  const pass = document.getElementById("adminPassword").value.trim();
+  if (!pass) return setStatus("Enter password");
+  const res = await fetch("/api/admin/login", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ password: pass })
+  });
+  if (!res.ok) return setStatus("Wrong password");
+  setStatus("Logged in", true);
+  loadProducts();
+}
 
 
 function setStatus(msg, good = false) {
