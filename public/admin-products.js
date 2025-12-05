@@ -77,9 +77,6 @@ document.getElementById("addForm").addEventListener("submit", async (e) => {
   try {
     const res = await fetch("/api/admin/products", {
       method: "POST",
-      headers: {
-        "x-admin-key": adminPass
-      },
       body: fd
     });
 
@@ -116,7 +113,6 @@ document.getElementById("productRows").addEventListener("click", async (e) => {
     try {
       const res = await fetch(`/api/admin/products/${id}`, {
         method: "DELETE",
-        headers: { "x-admin-key": adminPass }
       });
       if (!res.ok) throw new Error();
       setStatus("Product deleted.", true);
@@ -145,9 +141,6 @@ document.getElementById("productRows").addEventListener("click", async (e) => {
     try {
       const res = await fetch(`/api/admin/products/${id}`, {
         method: "PUT",
-        headers: {
-          "x-admin-key": adminPass
-        },
         body: fd
       });
       if (!res.ok) throw new Error();
