@@ -9,7 +9,6 @@ const adminSessions = new Map();
 const app = express();
 
 app.use(cookieParser());
-const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ---------- DB SETUP ----------
