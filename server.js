@@ -83,11 +83,13 @@ app.post("/api/admin/login", (req, res) => {
   adminSessions.set(token, Date.now());
 
   res.cookie("admin_session", token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: none,
-    maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
-  });
+  httpOnly: true,
+  secure: true,          // Railway uses HTTPS
+  sameSite: "none",      // REQUIRED so cookies work in frontend/backend on same domain
+  path: "/",             // so cookie is sent everywhere
+  maxAge: 1000 * 60 * 60 * 24 * 7
+});
+
 
   res.json({ success: true });
 });
