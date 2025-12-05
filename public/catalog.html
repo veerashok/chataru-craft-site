@@ -51,7 +51,7 @@
         <a href="contact.html" class="btn btn-outline">Request full catalog PDF</a>
       </div>
 
-      <!-- NEW FILTERS + SORT BOX -->
+      <!-- FILTERS + SORT -->
       <div class="filters">
         <input id="searchBox" placeholder="Search products..." />
         <select id="categoryFilter">
@@ -113,8 +113,8 @@
         category === "all" ||
         (category === "temple" && text.includes("temple")) ||
         (category === "decor" && text.includes("decor")) ||
-        (category === "furniture" && text.includes("bed") || text.includes("table") || text.includes("sofa")) ||
-        (category === "storage" && text.includes("sanduk") || text.includes("box"));
+        (category === "furniture" && (text.includes("bed") || text.includes("table") || text.includes("sofa"))) ||
+        (category === "storage" && (text.includes("sanduk") || text.includes("box")));
 
       return matchesSearch && matchesCategory;
     });
@@ -140,4 +140,17 @@
         <div class="product-name">${p.name}</div>
         <p class="product-desc">${p.description || ""}</p>
         <div class="product-price">₹${p.price}</div>
-        <button class="product-btn" onclick="window.location
+        <button class="product-btn" onclick="window.location='contact.html'">Enquire</button>
+      </article>
+    `).join("");
+  }
+
+  document.getElementById("searchBox").addEventListener("input", applyFilters);
+  document.getElementById("categoryFilter").addEventListener("change", applyFilters);
+  document.getElementById("sortFilter").addEventListener("change", applyFilters);
+
+  loadProducts();
+</script>
+
+</body>
+</html>
