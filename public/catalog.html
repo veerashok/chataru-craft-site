@@ -1,108 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
-   <head>
-      <meta charset="UTF-8" />
-      <title>Catalog | Chataru Craft</title>
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <link rel="stylesheet" href="styles.css" />
-   </head>
-   <body>
-      <header>
-         <div class="container nav">
-            <div class="logo">
-               <div class="logo-mark">CC</div>
-               <div>
-                  <div class="logo-text-small">Boss Enterprises</div>
-                  <div>Chataru Craft</div>
-               </div>
-            </div>
-            <button class="menu-toggle" aria-label="Toggle menu">☰</button>
-            <nav class="nav-links">
-               <a href="index.html">Home</a>
-               <a href="catalog.html">Catalog</a>
-               <a href="custom.html">Custom Orders</a>
-               <a href="contact.html">Contact</a>
-               <a class="nav-cta" href="contact.html">Bulk / B2B</a>
-            </nav>
-         </div>
-      </header>
-      <main>
-         <section>
-            <div class="container">
-               <div class="section-head">
-                  <div>
-                     <div class="badge">Catalog</div>
-                     <h1>Featured wooden furniture & decor</h1>
-                  </div>
-                  <a href="contact.html" class="btn btn-outline">Request full catalog PDF</a>
-               </div>
-               <div class="catalog-grid" id="productGrid">
-                  <article class="product-card">
-                     <img class="product-thumb" src="images/beautifulkailashwoodtemple.webp" alt="Beautiful Kailash Wood Temple">
-                     <div class="product-name">Beautiful Kailash Wood Temple</div>
-                     <p class="product-desc">Compact hand-carved Sheesham wood mandir with arches and a drawer for incense and diya accessories.</p>
-                     <div class="product-price">₹2,450</div>
-                     <button class="product-btn" onclick="window.location='contact.html'">Enquire</button>
-                  </article>
-                  <article class="product-card">
-                     <img class="product-thumb" src="images/charmingdollwalldecor.webp" alt="Charming Doll Wall Decor">
-                     <div class="product-name">Charming Doll Wall Decor</div>
-                     <p class="product-desc">Premium handcrafted wooden deer head wall décor — a stunning rustic accent for elegant interiors.</p>
-                     <div class="product-price">₹3,980</div>
-                     <button class="product-btn" onclick="window.location='contact.html'">Enquire</button>
-                  </article>
-                  <article class="product-card">
-                     <img class="product-thumb" src="images/futuristic2drawerbedsideunit.webp" alt="Futuristic 2 Drawer Bedside Unit">
-                     <div class="product-name">Futuristic 2 Drawer Bedside Unit</div>
-                     <p class="product-desc">Modern bedside organizer with dual drawers and open shelves for essentials and display items.</p>
-                     <div class="product-price">₹4,350</div>
-                     <button class="product-btn" onclick="window.location='contact.html'">Enquire</button>
-                  </article>
-                  <article class="product-card">
-                     <img class="product-thumb" src="images/woodenarchedsanduk.webp" alt="Wooden Arched Sanduk">
-                     <div class="product-name">Wooden Arched Sanduk</div>
-                     <p class="product-desc">Hand-crafted wooden sanduk with arched lid and brass lock — ideal for jewellery and festive gifting.</p>
-                     <div class="product-price">₹1,850</div>
-                     <button class="product-btn" onclick="window.location='contact.html'">Enquire</button>
-                  </article>
-               </div>
-               <p style="font-size:0.8rem;color:var(--muted);margin-top:0.7rem;">
-                  *Prices indicative; final price depends on size, polish, and platform listing.
-               </p>
-            </div>
-         </section>
-      </main>
-      <footer class="footer">
-         <div class="container footer-row">
-            <div>© <span id="year"></span> Chataru Craft · All rights reserved.</div>
-            <div>Village Lakhe Ka Tala, Ramjan Ki Gafan, Barmer, Rajasthan</div>
-         </div>
-      </footer>
-      <script src="main.js"></script>
-      <a href="https://wa.me/6375269136" class="whatsapp-btn" target="_blank">💬 WhatsApp</a>
-      <script>
-  async function loadCatalog() {
+<head>
+  <meta charset="UTF-8" />
+  <title>Catalog | Chataru Craft</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .filters {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.2rem;
+      align-items: center;
+    }
+    .filters select, .filters input {
+      padding: 8px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="container nav">
+    <div class="logo">
+      <div class="logo-mark">CC</div>
+      <div>
+        <div class="logo-text-small">Boss Enterprises</div>
+        <div>Chataru Craft</div>
+      </div>
+    </div>
+    <button class="menu-toggle" aria-label="Toggle menu">☰</button>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="catalog.html">Catalog</a>
+      <a href="custom.html">Custom Orders</a>
+      <a href="contact.html">Contact</a>
+      <a class="nav-cta" href="contact.html">Bulk / B2B</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="badge">Catalog</div>
+          <h1>Featured wooden furniture & decor</h1>
+        </div>
+        <a href="contact.html" class="btn btn-outline">Request full catalog PDF</a>
+      </div>
+
+      <!-- NEW FILTERS + SORT BOX -->
+      <div class="filters">
+        <input id="searchBox" placeholder="Search products..." />
+        <select id="categoryFilter">
+          <option value="all">All categories</option>
+          <option value="temple">Temple</option>
+          <option value="decor">Decor</option>
+          <option value="furniture">Furniture</option>
+          <option value="storage">Storage</option>
+        </select>
+        <select id="sortFilter">
+          <option value="newest">Sort: Newest</option>
+          <option value="lowhigh">Price: Low → High</option>
+          <option value="highlow">Price: High → Low</option>
+        </select>
+      </div>
+
+      <div class="catalog-grid" id="productGrid"></div>
+
+      <p style="font-size:0.8rem;color:var(--muted);margin-top:0.7rem;">
+        *Prices indicative; final price depends on size, polish, and platform listing.
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer-row">
+    <div>© <span id="year"></span> Chataru Craft · All rights reserved.</div>
+    <div>Village Lakhe Ka Tala, Ramjan Ki Gafan, Barmer, Rajasthan</div>
+  </div>
+</footer>
+
+<a href="https://wa.me/6375269136" class="whatsapp-btn" target="_blank">💬 WhatsApp</a>
+<script src="main.js"></script>
+
+<script>
+  let allProducts = [];
+
+  async function loadProducts() {
     try {
       const res = await fetch("/api/products");
-      const products = await res.json();
-      const grid = document.getElementById("productGrid");
-      grid.innerHTML = products.map(p => `
-        <article class="product-card">
-          <img class="product-thumb" src="${p.image}" alt="${p.name}">
-          <div class="product-name">${p.name}</div>
-          <p class="product-desc">${p.description || ""}</p>
-          <div class="product-price">₹${p.price}</div>
-          <button class="product-btn" onclick="window.location='contact.html'">Enquire</button>
-        </article>
-      `).join("");
+      allProducts = await res.json();
+      applyFilters();
     } catch (err) {
-      console.error(err);
-      const grid = document.getElementById("productGrid");
-      grid.innerHTML = "<p>Failed to load products.</p>";
+      document.getElementById("productGrid").innerHTML = "<p>Failed to load products.</p>";
     }
   }
-  loadCatalog();
-</script>
-<script src="main.js"></script>
-   </body>
-</html>
+
+  function applyFilters() {
+    const search = document.getElementById("searchBox").value.toLowerCase();
+    const category = document.getElementById("categoryFilter").value;
+    const sort = document.getElementById("sortFilter").value;
+
+    let filtered = allProducts.filter(p => {
+      const text = (p.name + " " + p.description).toLowerCase();
+      const matchesSearch = text.includes(search);
+
+      const matchesCategory =
+        category === "all" ||
+        (category === "temple" && text.includes("temple")) ||
+        (category === "decor" && text.includes("decor")) ||
+        (category === "furniture" && text.includes("bed") || text.includes("table") || text.includes("sofa")) ||
+        (category === "storage" && text.includes("sanduk") || text.includes("box"));
+
+      return matchesSearch && matchesCategory;
+    });
+
+    if (sort === "lowhigh") filtered.sort((a, b) => a.price - b.price);
+    if (sort === "highlow") filtered.sort((a, b) => b.price - a.price);
+    if (sort === "newest") filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    renderProducts(filtered);
+  }
+
+  function renderProducts(list) {
+    const grid = document.getElementById("productGrid");
+
+    if (!list.length) {
+      grid.innerHTML = "<p>No matching products found.</p>";
+      return;
+    }
+
+    grid.innerHTML = list.map(p => `
+      <article class="product-card">
+        <img class="product-thumb" src="${p.image}" alt="${p.name}">
+        <div class="product-name">${p.name}</div>
+        <p class="product-desc">${p.description || ""}</p>
+        <div class="product-price">₹${p.price}</div>
+        <button class="product-btn" onclick="window.location
